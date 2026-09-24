@@ -234,3 +234,9 @@ sandbox/
 *.pid
 *.seed
 *.pid.lock
+
+# =========================
+# Braille validation reports (local only)
+# =========================
+validation-report/*
+!validation-report/.gitkeep

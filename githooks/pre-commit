@@ -1,0 +1,14 @@
+#!/bin/sh
+# 提交前自动校验盲文字符点位表。
+# 规则与数据均在仓库内（shared/），本钩子只负责调用。
+# 结论无论通过与否都会写入 validation-report/。
+echo "[pre-commit] 校验盲文字符点位表..."
+node scripts/validate-braille.mjs
+status=$?
+if [ $status -ne 0 ]; then
+  echo ""
+  echo "[pre-commit] 盲文点位表校验未通过，提交已中止。"
+  echo "请按 validation-report/last-report.md 中的字符/问题明细修复 shared/braille-map.json。"
+  exit 1
+fi
+exit 0

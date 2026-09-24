@@ -81,10 +81,12 @@
     <div v-if="activeTab === 'ref'" class="bg-gray-900 rounded-xl p-4">
       <h3 class="text-purple-300 font-bold mb-3">盲文速查表</h3>
       <div class="grid grid-cols-6 md:grid-cols-9 gap-3">
-        <div v-for="(dots, char) in brailleMap" :key="char" class="flex flex-col items-center">
-          <div class="text-xl font-bold text-purple-400">{{ char }}</div>
-          <BrailleCell :dots="dots" :size="30" />
-          <div class="text-xs text-gray-500">{{ dots.join(',') }}</div>
+        <div v-for="(cells, char) in brailleMap" :key="char" class="flex flex-col items-center">
+          <div class="text-xl font-bold text-purple-400">{{ char === ' ' ? '␠' : char }}</div>
+          <div class="flex gap-0.5">
+            <BrailleCell v-for="(dots, i) in cells" :key="i" :dots="dots" :size="30" />
+          </div>
+          <div class="text-xs text-gray-500">{{ cells.map(c => c.join(',')).join(' / ') || '空' }}</div>
         </div>
       </div>
     </div>

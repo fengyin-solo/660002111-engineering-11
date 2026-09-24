@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "scripts": { "dev": "vite", "build": "vue-tsc && vite build", "preview": "vite preview" },
+  "scripts": { "dev": "vite", "build": "vue-tsc && vite build", "preview": "vite preview", "validate:braille": "node ../scripts/validate-braille.mjs", "postinstall": "git config core.hooksPath githooks || true" },
   "dependencies": { "vue": "^3.4.5", "pinia": "^2.1.7" },
   "devDependencies": { "@vitejs/plugin-vue": "^4.5.2", "typescript": "^5.3.3", "vite": "^5.0.8", "vue-tsc": "^1.8.25", "tailwindcss": "^3.4.0", "postcss": "^8.4.32", "autoprefixer": "^10.4.16" }
 }

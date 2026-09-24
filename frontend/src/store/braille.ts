@@ -38,7 +38,8 @@ export const useBrailleStore = defineStore('braille', () => {
   }
 
   function checkQuizAnswer() {
-    const correct = JSON.stringify([...selectedDots.value].sort()) === JSON.stringify([...(BRAILLE_MAP[quizChar.value] || [])].sort())
+    const cells = BRAILLE_MAP[quizChar.value] || [[]]
+    const correct = JSON.stringify([...selectedDots.value].sort()) === JSON.stringify([...cells[0]].sort())
     score.value.total++
     if (correct) score.value.correct++
     history.value.unshift({ input: quizChar.value, correct })
@@ -55,8 +56,10 @@ export const useBrailleStore = defineStore('braille', () => {
     const lines = inputText.value.toUpperCase().split('')
     let out = '盲文翻译输出\n\n'
     for (const ch of lines) {
-      const dots = BRAILLE_MAP[ch] || []
-      out += `${ch} → [${dots.join(',')}] ${dotsToUnicode(dots)}\n`
+      const cells = BRAILLE_MAP[ch] || [[]]
+      const dotsText = cells.map(c => `[${c.join(',')}]`).join('')
+      const unicode = cells.map(dotsToUnicode).join('')
+      out += `${ch} → ${dotsText} ${unicode}\n`
     }
     return out
   }

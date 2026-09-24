@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import { BRAILLE_MAP, textToBraille, brailleToText, dotsToUnicode } from '../utils/braille'
+import { textToBraille, brailleToText, dotsToUnicode, normalizeCells } from '../utils/braille'
+import { BRAILLE_MAP } from '../data/brailleTable'
 import type { LearnMode } from '../types'
 
 export const useBrailleStore = defineStore('braille', () => {
@@ -38,7 +39,9 @@ export const useBrailleStore = defineStore('braille', () => {
   }
 
   function checkQuizAnswer() {
-    const correct = JSON.stringify([...selectedDots.value].sort()) === JSON.stringify([...(BRAILLE_MAP[quizChar.value] || [])].sort())
+    const expected = BRAILLE_MAP[quizChar.value] ?? [[]]
+    // 训练只针对字母（单方），只取字母方比对
+    const correct = normalizeCells([selectedDots.value]) === normalizeCells([expected[expected.length - 1]])
     score.value.total++
     if (correct) score.value.correct++
     history.value.unshift({ input: quizChar.value, correct })
@@ -55,8 +58,9 @@ export const useBrailleStore = defineStore('braille', () => {
     const lines = inputText.value.toUpperCase().split('')
     let out = '盲文翻译输出\n\n'
     for (const ch of lines) {
-      const dots = BRAILLE_MAP[ch] || []
-      out += `${ch} → [${dots.join(',')}] ${dotsToUnicode(dots)}\n`
+      const cells = BRAILLE_MAP[ch] ?? [[]]
+      const rendered = cells.map(dots => `${dotsToUnicode(dots)} [${dots.join(',')}]`).join(' ')
+      out += `${ch === ' ' ? '␠' : ch} → ${rendered}\n`
     }
     return out
   }

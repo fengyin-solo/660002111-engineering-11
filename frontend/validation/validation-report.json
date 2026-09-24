@@ -1,0 +1,37 @@
+{
+  "passed": true,
+  "checkedAt": "2026-09-24T02:04:36.550Z",
+  "rules": [
+    {
+      "code": "missing-entry",
+      "label": "条目缺失",
+      "description": "字母、数字、空格三类应有的字符必须全部有条目，缺一个即不通过"
+    },
+    {
+      "code": "duplicate-dots",
+      "label": "点位重复",
+      "description": "任何两个字符都不能共用同一组圆点（规范化后的方序列必须全局唯一）"
+    },
+    {
+      "code": "reverse-mismatch",
+      "label": "反向对不上",
+      "description": "每个字符的点位序列经反向查找必须回到该字符本身"
+    }
+  ],
+  "totalEntries": 37,
+  "coverage": {
+    "letter": {
+      "expected": 26,
+      "actual": 26
+    },
+    "digit": {
+      "expected": 10,
+      "actual": 10
+    },
+    "space": {
+      "expected": 1,
+      "actual": 1
+    }
+  },
+  "issues": []
+}

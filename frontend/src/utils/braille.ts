@@ -1,13 +1,9 @@
-// English Braille Grade 1 mapping
-export const BRAILLE_MAP: Record<string, number[]> = {
-  'A': [1], 'B': [1,2], 'C': [1,4], 'D': [1,4,5], 'E': [1,5],
-  'F': [1,2,4], 'G': [1,2,4,5], 'H': [1,2,5], 'I': [2,4], 'J': [2,4,5],
-  'K': [1,3], 'L': [1,2,3], 'M': [1,3,4], 'N': [1,3,4,5], 'O': [1,3,5],
-  'P': [1,2,3,4], 'Q': [1,2,3,4,5], 'R': [1,2,3,5], 'S': [2,3,4], 'T': [2,3,4,5],
-  'U': [1,3,6], 'V': [1,2,3,6], 'W': [2,4,5,6], 'X': [1,3,4,6], 'Y': [1,3,4,5,6], 'Z': [1,3,5,6],
-  '1': [1], '2': [1,2], '3': [1,4], '4': [1,4,5], '5': [1,5],
-  '0': [2,4,5], ' ': [],
-}
+// 应用层转换函数：点位数据统一来自 data/brailleTable.ts，这里不再维护第二份表
+import { BRAILLE_MAP, normalizeCells, formatCells } from '../data/brailleTable'
+
+export type BrailleCells = number[][]
+
+export { BRAILLE_MAP, normalizeCells, formatCells }
 
 // Dot positions in 2x3 grid (col, row): 1=(0,0), 2=(0,1), 3=(0,2), 4=(1,0), 5=(1,1), 6=(1,2)
 export const DOT_POSITIONS: Record<number, [number, number]> = {
@@ -15,13 +11,19 @@ export const DOT_POSITIONS: Record<number, [number, number]> = {
   4: [1, 0], 5: [1, 1], 6: [1, 2],
 }
 
-export function textToBraille(text: string): number[][] {
-  return text.toUpperCase().split('').map(c => BRAILLE_MAP[c] || [])
+/** 文本 → 盲文方序列（字符在表中缺失时输出单一空白方） */
+export function textToBraille(text: string): BrailleCells {
+  return text.toUpperCase().split('').map(char => {
+    const entryCells = BRAILLE_MAP[char]
+    return entryCells ? entryCells.map(cell => [...cell]) : [[]]
+  }).flat()
 }
 
+/** 单方盲文 → 字符（字母/空格）；多方序列（如数字）应使用 data 表的反向查找 */
 export function brailleToText(dots: number[]): string {
-  for (const [char, d] of Object.entries(BRAILLE_MAP)) {
-    if (JSON.stringify(d.sort()) === JSON.stringify([...dots].sort())) return char
+  const key = normalizeCells([dots])
+  for (const [char, cells] of Object.entries(BRAILLE_MAP)) {
+    if (normalizeCells(cells) === key) return char
   }
   return '?'
 }

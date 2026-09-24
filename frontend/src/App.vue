@@ -81,10 +81,12 @@
     <div v-if="activeTab === 'ref'" class="bg-gray-900 rounded-xl p-4">
       <h3 class="text-purple-300 font-bold mb-3">盲文速查表</h3>
       <div class="grid grid-cols-6 md:grid-cols-9 gap-3">
-        <div v-for="(dots, char) in brailleMap" :key="char" class="flex flex-col items-center">
-          <div class="text-xl font-bold text-purple-400">{{ char }}</div>
-          <BrailleCell :dots="dots" :size="30" />
-          <div class="text-xs text-gray-500">{{ dots.join(',') }}</div>
+        <div v-for="entry in brailleEntries" :key="`${entry.category}-${entry.char}`" class="flex flex-col items-center">
+          <div class="text-xl font-bold text-purple-400">{{ entry.char === ' ' ? '␠' : entry.char }}</div>
+          <div class="flex gap-0.5">
+            <BrailleCell v-for="(cell, ci) in entry.cells" :key="ci" :dots="cell" :size="30" />
+          </div>
+          <div class="text-xs text-gray-500">{{ formatCells(entry.cells) }}</div>
         </div>
       </div>
     </div>
@@ -98,11 +100,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useBrailleStore } from './store/braille'
-import { BRAILLE_MAP } from './utils/braille'
+import { BRAILLE_ENTRIES, formatCells } from './data/brailleTable'
 import BrailleCell from './components/BrailleCell.vue'
 
 const store = useBrailleStore()
-const brailleMap = BRAILLE_MAP
+const brailleEntries = BRAILLE_ENTRIES
 const tabs = [
   { id: 'translate', label: '翻译模式' },
   { id: 'learn', label: '训练模式' },
